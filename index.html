@@ -1,497 +1,101 @@
-<!DOCTYPE html>
-<html lang="en">
+<!doctype html>
+<html lang="bn">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Glass Calculator</title>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="theme-color" content="#070d27">
+<title>কিছু না-বলা কথা — Edit Mode</title>
 <style>
-  /* ---------- Reset & Base ---------- */
-  * {
-    margin: 0;
-    padding: 0;
-    box-sizing: border-box;
-    font-family: 'Segoe UI', Roboto, Arial, sans-serif;
-  }
-
-  body {
-    min-height: 100vh;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    background: radial-gradient(circle at 20% 20%, #2b2f77, transparent 40%),
-                radial-gradient(circle at 80% 0%, #7a2b77, transparent 40%),
-                radial-gradient(circle at 50% 100%, #1e3c72, transparent 50%),
-                linear-gradient(135deg, #0f0c29, #302b63, #24243e);
-    padding: 16px;
-    overflow: hidden;
-  }
-
-  /* ---------- Calculator Shell (Glassmorphism) ---------- */
-  .calculator {
-    width: 100%;
-    max-width: 380px;
-    background: rgba(255, 255, 255, 0.08);
-    backdrop-filter: blur(20px);
-    -webkit-backdrop-filter: blur(20px);
-    border: 1px solid rgba(255, 255, 255, 0.15);
-    border-radius: 24px;
-    padding: 20px;
-    box-shadow:
-      0 8px 32px rgba(0, 0, 0, 0.45),
-      inset 0 1px 1px rgba(255, 255, 255, 0.15);
-  }
-
-  /* ---------- Display ---------- */
-  .display {
-    background: rgba(0, 0, 0, 0.25);
-    border-radius: 16px;
-    padding: 20px 18px;
-    margin-bottom: 18px;
-    text-align: right;
-    overflow: hidden;
-    box-shadow: inset 0 2px 6px rgba(0, 0, 0, 0.4);
-    min-height: 100px;
-    display: flex;
-    flex-direction: column;
-    justify-content: flex-end;
-  }
-
-  .prev-operand {
-    color: rgba(255, 255, 255, 0.55);
-    font-size: 1rem;
-    min-height: 1.2rem;
-    white-space: nowrap;
-    overflow-x: auto;
-    scrollbar-width: none;
-  }
-  .prev-operand::-webkit-scrollbar { display: none; }
-
-  .curr-operand {
-    color: #fff;
-    font-size: clamp(1.8rem, 8vw, 2.6rem);
-    font-weight: 600;
-    white-space: nowrap;
-    overflow-x: auto;
-    scrollbar-width: none;
-    letter-spacing: 0.5px;
-  }
-  .curr-operand::-webkit-scrollbar { display: none; }
-
-  .curr-operand.error {
-    color: #ff6b6b;
-    font-size: 1.8rem;
-  }
-
-  /* ---------- Button Grid ---------- */
-  .buttons {
-    display: grid;
-    grid-template-columns: repeat(4, 1fr);
-    gap: 12px;
-  }
-
-  button {
-    border: none;
-    outline: none;
-    cursor: pointer;
-    font-size: 1.25rem;
-    font-weight: 500;
-    color: #fff;
-    padding: 18px 0;
-    border-radius: 14px;
-    background: rgba(255, 255, 255, 0.08);
-    border: 1px solid rgba(255, 255, 255, 0.1);
-    transition: transform 0.08s ease, background 0.25s ease, box-shadow 0.25s ease;
-    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
-    -webkit-tap-highlight-color: transparent;
-  }
-
-  button:hover {
-    background: rgba(255, 255, 255, 0.18);
-    box-shadow: 0 6px 14px rgba(0, 0, 0, 0.3);
-  }
-
-  button:active,
-  button.pressed {
-    transform: scale(0.92);
-    background: rgba(255, 255, 255, 0.28);
-  }
-
-  /* Operator buttons */
-  .btn-operator {
-    background: rgba(255, 149, 0, 0.25);
-    border: 1px solid rgba(255, 149, 0, 0.35);
-    color: #ffb454;
-  }
-  .btn-operator:hover { background: rgba(255, 149, 0, 0.4); }
-  .btn-operator.active-op {
-    background: #ff9500;
-    color: #fff;
-  }
-
-  /* Equals button */
-  .btn-equals {
-    background: linear-gradient(135deg, #ff9500, #ff5e62);
-    grid-row: span 2;
-    font-size: 1.6rem;
-  }
-  .btn-equals:hover {
-    filter: brightness(1.1);
-  }
-
-  /* Function buttons: AC, DEL, % */
-  .btn-function {
-    background: rgba(255, 255, 255, 0.15);
-    color: #dcdcff;
-  }
-
-  .btn-zero {
-    grid-column: span 2;
-  }
-
-  /* ---------- Responsive ---------- */
-  @media (max-width: 420px) {
-    .calculator { padding: 14px; border-radius: 20px; }
-    button { padding: 16px 0; font-size: 1.1rem; }
-    .buttons { gap: 8px; }
-  }
-
-  @media (max-width: 320px) {
-    .curr-operand { font-size: 1.6rem; }
-    button { padding: 14px 0; font-size: 1rem; }
-  }
+@import url('https://fonts.googleapis.com/css2?family=Hind+Siliguri:wght@400;500;600;700&display=swap');
+:root{--line:rgba(173,155,255,.4);--text:#f2efff;--muted:#c5c6e5;--pink:#ff78bc}
+*{box-sizing:border-box}body{margin:0;min-height:100vh;background:radial-gradient(ellipse at top,#1a2455 0,#070d27 58%,#050818 100%);color:var(--text);font-family:'Hind Siliguri',system-ui,sans-serif}
+body:before{content:"";position:fixed;inset:0;pointer-events:none;background-image:radial-gradient(2px 2px at 20% 30%,#fff,transparent),radial-gradient(1px 1px at 75% 18%,#b8baff,transparent),radial-gradient(2px 2px at 60% 70%,#8eabff,transparent),radial-gradient(1px 1px at 88% 54%,#fff,transparent),radial-gradient(1px 1px at 35% 82%,#a7aaff,transparent);background-size:270px 220px;opacity:.55}
+header{position:relative;border-bottom:1px solid rgba(190,180,255,.2);background:rgba(5,10,30,.72);padding:14px 20px}.nav{max-width:1050px;margin:auto;display:flex;justify-content:space-between;align-items:center;gap:12px}.brand{font-size:1.2rem;font-weight:600}.brand span{color:var(--pink);margin-right:8px}.tools{display:flex;gap:8px;flex-wrap:wrap}.btn{font:inherit;color:#fff;border:1px solid var(--line);background:#7c6cff22;border-radius:12px;padding:9px 13px;cursor:pointer}.btn.primary{background:linear-gradient(90deg,#8277ff,#e76eb5);border:0}.btn:hover{filter:brightness(1.12)}
+main{position:relative;max-width:1050px;margin:auto;padding:36px 20px 30px}.hero{text-align:center;padding:18px 0 24px}.eyebrow{color:#b9a7ff;letter-spacing:1.5px;font-size:.8rem}h1{font-size:clamp(2.1rem,7vw,4.2rem);line-height:1.2;margin:12px 0;text-shadow:0 0 28px #8d7aff77}.underline{width:130px;height:3px;border-radius:5px;margin:15px auto;background:linear-gradient(90deg,#8b80ff,#ff83bd)}.hero p{max-width:650px;margin:15px auto;color:var(--muted);font-size:1.05rem;line-height:1.9}
+.notice{max-width:800px;margin:0 auto 25px;padding:12px 15px;border:1px solid rgba(255,198,126,.38);border-radius:14px;background:#37232a55;color:#ffe3bb;line-height:1.7;font-size:.93rem}
+h2{text-align:center;font-size:1.45rem;font-weight:500;margin:28px 0 18px}.cards{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:15px}.card{border:1px solid var(--line);background:linear-gradient(145deg,#0d1946e8,#140d31e8);border-radius:18px;padding:19px;min-height:178px;color:var(--text);cursor:pointer;text-align:left;font:inherit;display:flex;flex-direction:column;align-items:flex-start;transition:.2s}.card:hover,.card:focus-visible{transform:translateY(-3px);border-color:var(--pink);box-shadow:0 10px 30px #0004;outline:none}.icon{font-size:1.7rem;margin-bottom:9px}.card strong{font-size:1.1rem;margin-bottom:6px}.card .desc{font-size:.94rem;color:var(--muted);line-height:1.6}.arrow{color:var(--pink);margin-top:auto;padding-top:10px}
+.panel{display:none;max-width:780px;margin:20px auto 0;border:1px solid #ff78bc77;background:#080e27f2;border-radius:20px;padding:24px;animation:rise .25s ease}.panel.open{display:block}.panel h3{margin:0 0 10px;color:#ff9dce;font-size:1.4rem}.panel p{white-space:pre-wrap;overflow-wrap:anywhere;line-height:2;color:#efedff;font-size:1.05rem;margin:0}.actions{display:flex;justify-content:flex-end;margin-top:16px}
+footer{position:relative;text-align:center;color:var(--muted);padding:25px 10px 10px;line-height:1.9}footer b{color:var(--pink)}
+#editor{display:none;position:relative;max-width:850px;margin:0 auto 25px;border:1px solid var(--line);border-radius:20px;padding:20px;background:#090f2beF;box-shadow:0 15px 50px #0004}#editor.open{display:block}.editor-head{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap}.editor-head h2{margin:0;text-align:left}.help{color:var(--muted);font-size:.9rem;line-height:1.7}.edit-item{border:1px solid #a79aff33;border-radius:15px;padding:15px;margin-top:14px;background:#ffffff06}.edit-item label{display:block;font-size:.92rem;color:#d6d0ff;margin:8px 0 5px}.edit-item input,.edit-item textarea{width:100%;font:inherit;color:#fff;background:#060b20;border:1px solid #8c83cc66;border-radius:10px;padding:10px 12px;outline:none}.edit-item input:focus,.edit-item textarea:focus{border-color:#ff78bc}.edit-item textarea{min-height:125px;resize:vertical;line-height:1.7}.editor-actions{display:flex;gap:9px;flex-wrap:wrap;margin-top:16px}.status{min-height:24px;color:#a7f3d0;margin-top:8px;font-size:.9rem}
+@keyframes rise{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
+@media(max-width:720px){.cards{grid-template-columns:repeat(2,minmax(0,1fr))}.tools{justify-content:flex-end}}@media(max-width:480px){.cards{grid-template-columns:1fr}.card{min-height:140px}main{padding:24px 14px}.nav{align-items:flex-start;flex-direction:column}.tools{justify-content:flex-start}.panel{padding:18px}}@media(prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
 </style>
 </head>
 <body>
-
-<div class="calculator">
-  <!-- Display shows previous expression and current value -->
-  <div class="display">
-    <div class="prev-operand" id="prevOperand"></div>
-    <div class="curr-operand" id="currOperand">0</div>
-  </div>
-
-  <div class="buttons">
-    <button class="btn-function" data-action="clear">AC</button>
-    <button class="btn-function" data-action="delete">DEL</button>
-    <button class="btn-function" data-action="percent">%</button>
-    <button class="btn-operator" data-operator="÷">÷</button>
-
-    <button data-number="7">7</button>
-    <button data-number="8">8</button>
-    <button data-number="9">9</button>
-    <button class="btn-operator" data-operator="×">×</button>
-
-    <button data-number="4">4</button>
-    <button data-number="5">5</button>
-    <button data-number="6">6</button>
-    <button class="btn-operator" data-operator="-">-</button>
-
-    <button data-number="1">1</button>
-    <button data-number="2">2</button>
-    <button data-number="3">3</button>
-    <button class="btn-operator" data-operator="+">+</button>
-
-    <button class="btn-function" data-action="negate">+/-</button>
-    <button class="btn-zero" data-number="0">0</button>
-    <button data-number=".">.</button>
-    <button class="btn-equals" data-action="equals">=</button>
-  </div>
-</div>
-
+<header><div class="nav"><div class="brand"><span>♡</span> কিছু না-বলা কথা</div><div class="tools"><button class="btn" id="editToggle">✎ Edit Mode খুলুন</button><button class="btn" id="exportBtn">↓ লেখা Export</button></div></div></header>
+<main>
+<section class="hero"><div class="eyebrow">A LITTLE CORNER OF THOUGHTS</div><h1>কিছু না-বলা কথা</h1><div class="underline"></div><p>সব কথা মুখে বলা যায় না। কিছু কথা লিখে রাখা যায়—<br>নিজের ভাষায়, নিজের মতো করে।</p></section>
+<div class="notice"><strong>ব্যবহার:</strong> Edit Mode খুলে প্রতিটি অপশনের শিরোনাম ও লেখা বদলাও, তারপর “পরিবর্তন সংরক্ষণ” চাপো। লেখা এই ব্রাউজারে সেভ হবে। অন্য ডিভাইসে বা অন্য ব্রাউজারে নিজে থেকে যাবে না।</div>
+<section id="editor" aria-label="Edit Mode">
+  <div class="editor-head"><h2>✍️ তোমার লেখা সম্পাদনা</h2><button class="btn" id="closeEditor">বন্ধ করো ×</button></div>
+  <p class="help">নিচের ঘরগুলোতে নিজের লেখা টাইপ করো। “পরিবর্তন সংরক্ষণ” চাপলে ওয়েবসাইটের অপশনগুলো আপডেট হবে। “লেখা Export” দিয়ে JSON ফাইল ডাউনলোড করে ব্যাকআপ রাখতে পারো।</p>
+  <div id="editFields"></div>
+  <div class="editor-actions"><button class="btn primary" id="saveBtn">✓ পরিবর্তন সংরক্ষণ</button><button class="btn" id="resetBtn">ডিফল্ট লেখা ফেরাও</button></div>
+  <div id="status" class="status" aria-live="polite"></div>
+</section>
+<h2>তুমি চাইলে, এই কথাগুলো পড়তে পারো ✦</h2>
+<section class="cards" id="cards" aria-label="চিঠির অংশগুলো"></section>
+<section id="panel" class="panel" aria-live="polite" aria-labelledby="panel-title"><h3 id="panel-title"></h3><p id="panel-text"></p><div class="actions"><button class="btn" id="closePanel">বন্ধ করো ×</button></div></section>
+<footer>তোমার জীবন সুন্দর হোক, দিনগুলো ভালো কাটুক। <b>♡</b><br><small>একটি অনুভূতি—কোনও দাবি নয়।</small></footer>
+</main>
 <script>
-/* =========================================================
-   Calculator Logic
-   State is tracked via:
-   - currentOperand : the number currently being typed/shown
-   - previousOperand : the number before the operator
-   - operator        : the pending operator (+ - × ÷)
-   - shouldResetScreen : flag to know when to overwrite display
-   ========================================================= */
-
-const prevOperandEl = document.getElementById('prevOperand');
-const currOperandEl = document.getElementById('currOperand');
-
-let currentOperand = '0';
-let previousOperand = '';
-let operator = null;
-let shouldResetScreen = false; // true right after "=" or picking an operator
-
-const MAX_DIGITS = 15; // prevents overflow of the display
-
-// ---------- Helpers ----------
-
-// Format a number string with thousands separators, preserving decimals as typed
-function formatNumber(value) {
-  if (value === '' || value === undefined) return '';
-  if (value === 'Error') return value;
-
-  const isNegative = value.startsWith('-');
-  const rawValue = isNegative ? value.slice(1) : value;
-
-  const [intPart, decimalPart] = rawValue.split('.');
-  let formattedInt = intPart === '' ? '' : parseInt(intPart, 10).toLocaleString('en-US');
-  if (isNaN(parseInt(intPart, 10)) && intPart !== '') formattedInt = intPart;
-
-  let result = formattedInt;
-  if (decimalPart !== undefined) {
-    result += '.' + decimalPart;
-  }
-  return (isNegative ? '-' : '') + result;
+const defaults = [
+ {icon:"🌱",title:"আমার পরিচয়",desc:"নিজের সম্পর্কে কী বলতে চাও…",body:"এখানে নিজের পরিচয় লিখো।"},
+ {icon:"♡",title:"একটি ভালো লাগা",desc:"কেন এই অনুভূতিটুকু লিখে রাখতে ইচ্ছে হলো…",body:"এখানে নিজের অনুভূতি নিজের ভাষায় লিখো।"},
+ {icon:"🪻",title:"সম্মান ও সীমারেখা",desc:"স্বাচ্ছন্দ্য আর সিদ্ধান্তের প্রতি সম্মান…",body:"এখানে সম্মান ও ব্যক্তিগত সীমারেখা নিয়ে তোমার কথা লিখো।"},
+ {icon:"☁️",title:"আমার দ্বিধা",desc:"কিছু কথা বলার আগে কেন থেমে গেছ…",body:"এখানে নিজের দ্বিধার কথা লিখো।"},
+ {icon:"☀️",title:"তোমার জন্য শুভকামনা",desc:"কোনও প্রত্যাশা ছাড়াই কিছু ভালো কথা…",body:"এখানে শুভকামনা লিখো।"},
+ {icon:"✿",title:"শেষ কথা",desc:"সবশেষে তুমি কী বলতে চাও…",body:"এখানে শেষ কথাগুলো লিখো।"}
+];
+const STORAGE_KEY = "kichuNaBolaKothaEditV1";
+let content = defaults.map(x=>({...x}));
+try { const saved=localStorage.getItem(STORAGE_KEY); if(saved){const parsed=JSON.parse(saved); if(Array.isArray(parsed)&&parsed.length===defaults.length) content=parsed;} } catch(e){}
+const cards=document.getElementById("cards"), fields=document.getElementById("editFields");
+const editor=document.getElementById("editor"), panel=document.getElementById("panel");
+function renderCards(){
+ cards.innerHTML="";
+ content.forEach((item,i)=>{
+  const b=document.createElement("button");b.className="card";b.type="button";
+  const icon=document.createElement("span");icon.className="icon";icon.textContent=item.icon;
+  const title=document.createElement("strong");title.textContent=item.title||"শিরোনাম";
+  const desc=document.createElement("span");desc.className="desc";desc.textContent=item.desc||"";
+  const arrow=document.createElement("span");arrow.className="arrow";arrow.textContent="পড়ো ↗";
+  b.append(icon,title,desc,arrow);b.addEventListener("click",()=>openPanel(i));cards.appendChild(b);
+ });
 }
-
-// Update the DOM to reflect the current state
-function updateDisplay() {
-  currOperandEl.classList.remove('error');
-
-  if (currentOperand === 'Error') {
-    currOperandEl.textContent = 'Error';
-    currOperandEl.classList.add('error');
-    prevOperandEl.textContent = '';
-    return;
-  }
-
-  currOperandEl.textContent = formatNumber(currentOperand);
-
-  if (operator != null) {
-    prevOperandEl.textContent = `${formatNumber(previousOperand)} ${operator}`;
-  } else {
-    prevOperandEl.textContent = '';
-  }
+function renderFields(){
+ fields.innerHTML="";
+ content.forEach((item,i)=>{
+  const box=document.createElement("div");box.className="edit-item";
+  const head=document.createElement("strong");head.textContent=(i+1)+". "+(item.icon||"✦")+" অপশন";
+  const l1=document.createElement("label");l1.textContent="শিরোনাম";
+  const title=document.createElement("input");title.value=item.title;title.maxLength=80;title.dataset.index=i;title.dataset.field="title";
+  const l2=document.createElement("label");l2.textContent="ছোট বিবরণ (কার্ডে দেখা যাবে)";
+  const desc=document.createElement("input");desc.value=item.desc;desc.maxLength=150;desc.dataset.index=i;desc.dataset.field="desc";
+  const l3=document.createElement("label");l3.textContent="মূল লেখা (ক্লিক করলে খুলবে)";
+  const body=document.createElement("textarea");body.value=item.body;body.rows=5;body.dataset.index=i;body.dataset.field="body";
+  box.append(head,l1,title,l2,desc,l3,body);fields.appendChild(box);
+ });
 }
-
-// Reset everything to initial state
-function clearAll() {
-  currentOperand = '0';
-  previousOperand = '';
-  operator = null;
-  shouldResetScreen = false;
-}
-
-// Remove the last character typed
-function deleteLast() {
-  if (currentOperand === 'Error') {
-    clearAll();
-    return;
-  }
-  if (currentOperand.length === 1) {
-    currentOperand = '0';
-  } else {
-    currentOperand = currentOperand.slice(0, -1);
-  }
-}
-
-// Append a digit or decimal point to the current operand
-function appendNumber(digit) {
-  if (currentOperand === 'Error') {
-    clearAll();
-  }
-
-  // If we just computed a result or picked an operator, start fresh
-  if (shouldResetScreen) {
-    currentOperand = '';
-    shouldResetScreen = false;
-  }
-
-  // Prevent multiple decimal points
-  if (digit === '.' && currentOperand.includes('.')) return;
-
-  // Prevent leading extra zeros e.g. "00" -> "0"
-  if (digit !== '.' && currentOperand === '0') {
-    currentOperand = digit;
-    return;
-  }
-
-  // Limit overall length to avoid overflow
-  const digitsOnly = currentOperand.replace(/[.-]/g, '');
-  if (digitsOnly.length >= MAX_DIGITS) return;
-
-  currentOperand = currentOperand === '' ? digit : currentOperand + digit;
-}
-
-// Choose / switch operator, preventing consecutive operator entry issues
-function chooseOperator(op) {
-  if (currentOperand === 'Error') return;
-
-  // If there's already a pending operation and the user hasn't typed a new
-  // number yet, just swap the operator (prevents "5++" style buildup).
-  if (operator !== null && shouldResetScreen) {
-    operator = op;
-    updateDisplay();
-    return;
-  }
-
-  // If a previous operand exists, compute the intermediate result first
-  if (previousOperand !== '' && !shouldResetScreen) {
-    compute();
-  }
-
-  operator = op;
-  previousOperand = currentOperand;
-  shouldResetScreen = true;
-  updateDisplay();
-}
-
-// Perform the calculation
-function compute() {
-  let result;
-  const prev = parseFloat(previousOperand);
-  const curr = parseFloat(currentOperand);
-
-  if (isNaN(prev) || isNaN(curr)) return;
-
-  switch (operator) {
-    case '+':
-      result = prev + curr;
-      break;
-    case '-':
-      result = prev - curr;
-      break;
-    case '×':
-      result = prev * curr;
-      break;
-    case '÷':
-      if (curr === 0) {
-        currentOperand = 'Error';
-        previousOperand = '';
-        operator = null;
-        shouldResetScreen = true;
-        updateDisplay();
-        return;
-      }
-      result = prev / curr;
-      break;
-    default:
-      return;
-  }
-
-  // Round to avoid floating point artifacts, keep reasonable precision
-  result = Math.round((result + Number.EPSILON) * 1e10) / 1e10;
-
-  currentOperand = trimTrailingZeros(result.toString());
-  operator = null;
-  previousOperand = '';
-  shouldResetScreen = true;
-}
-
-// Remove unnecessary trailing zeros/decimal points introduced by float math
-function trimTrailingZeros(str) {
-  if (!str.includes('.')) return str;
-  return str.replace(/\.?0+$/, '') || '0';
-}
-
-// Handle percentage: converts current value to its percentage form
-function applyPercent() {
-  if (currentOperand === 'Error') return;
-  const value = parseFloat(currentOperand);
-  if (isNaN(value)) return;
-  currentOperand = trimTrailingZeros((value / 100).toString());
-}
-
-// Toggle +/-
-function negate() {
-  if (currentOperand === 'Error' || currentOperand === '0') return;
-  currentOperand = currentOperand.startsWith('-')
-    ? currentOperand.slice(1)
-    : '-' + currentOperand;
-}
-
-// Equals: finalize the computation
-function handleEquals() {
-  if (operator === null || shouldResetScreen) {
-    // Nothing to compute (no pending operator, or no new operand typed)
-    return;
-  }
-  compute();
-}
-
-// ---------- Visual feedback for button press ----------
-function pressEffect(button) {
-  button.classList.add('pressed');
-  setTimeout(() => button.classList.remove('pressed'), 100);
-}
-
-// ---------- Event wiring: Buttons ----------
-document.querySelectorAll('button').forEach(button => {
-  button.addEventListener('click', () => {
-    pressEffect(button);
-
-    const number = button.dataset.number;
-    const action = button.dataset.action;
-    const op = button.dataset.operator;
-
-    if (number !== undefined) {
-      appendNumber(number);
-    } else if (op !== undefined) {
-      chooseOperator(op);
-    } else if (action === 'clear') {
-      clearAll();
-    } else if (action === 'delete') {
-      deleteLast();
-    } else if (action === 'percent') {
-      applyPercent();
-    } else if (action === 'negate') {
-      negate();
-    } else if (action === 'equals') {
-      handleEquals();
-    }
-
-    updateDisplay();
-    highlightActiveOperator();
-  });
+function openPanel(i){document.getElementById("panel-title").textContent=content[i].title;document.getElementById("panel-text").textContent=content[i].body;panel.classList.add("open");panel.scrollIntoView({behavior:"smooth",block:"nearest"});}
+function setStatus(s){document.getElementById("status").textContent=s;}
+document.getElementById("editToggle").addEventListener("click",()=>{renderFields();editor.classList.toggle("open");if(editor.classList.contains("open"))editor.scrollIntoView({behavior:"smooth",block:"start"});});
+document.getElementById("closeEditor").addEventListener("click",()=>editor.classList.remove("open"));
+document.getElementById("closePanel").addEventListener("click",()=>panel.classList.remove("open"));
+document.getElementById("saveBtn").addEventListener("click",()=>{
+ fields.querySelectorAll("[data-field]").forEach(el=>{const i=Number(el.dataset.index),key=el.dataset.field;content[i][key]=el.value;});
+ renderCards();
+ try{localStorage.setItem(STORAGE_KEY,JSON.stringify(content));setStatus("সংরক্ষণ হয়েছে! এই ব্রাউজারে লেখা রাখা হয়েছে।");}
+ catch(e){setStatus("এই ব্রাউজারে সংরক্ষণ করা যায়নি। Export করে ব্যাকআপ রাখো।");}
 });
-
-// Highlight the currently selected operator button
-function highlightActiveOperator() {
-  document.querySelectorAll('.btn-operator').forEach(btn => {
-    btn.classList.toggle('active-op', operator !== null && btn.dataset.operator === operator && shouldResetScreen);
-  });
-}
-
-// ---------- Event wiring: Keyboard ----------
-window.addEventListener('keydown', (e) => {
-  const key = e.key;
-  let matchedButton = null;
-
-  if (/^[0-9]$/.test(key)) {
-    appendNumber(key);
-    matchedButton = document.querySelector(`button[data-number="${key}"]`);
-  } else if (key === '.') {
-    appendNumber('.');
-    matchedButton = document.querySelector('button[data-number="."]');
-  } else if (key === '+' || key === '-') {
-    chooseOperator(key);
-    matchedButton = document.querySelector(`button[data-operator="${key}"]`);
-  } else if (key === '*') {
-    chooseOperator('×');
-    matchedButton = document.querySelector('button[data-operator="×"]');
-  } else if (key === '/') {
-    e.preventDefault(); // avoid browser quick-find
-    chooseOperator('÷');
-    matchedButton = document.querySelector('button[data-operator="÷"]');
-  } else if (key === 'Enter' || key === '=') {
-    e.preventDefault();
-    handleEquals();
-    matchedButton = document.querySelector('.btn-equals');
-  } else if (key === 'Backspace') {
-    deleteLast();
-    matchedButton = document.querySelector('button[data-action="delete"]');
-  } else if (key === 'Escape') {
-    clearAll();
-    matchedButton = document.querySelector('button[data-action="clear"]');
-  } else if (key === '%') {
-    applyPercent();
-    matchedButton = document.querySelector('button[data-action="percent"]');
-  } else {
-    return; // key not handled
-  }
-
-  if (matchedButton) pressEffect(matchedButton);
-  updateDisplay();
-  highlightActiveOperator();
+document.getElementById("resetBtn").addEventListener("click",()=>{
+ if(confirm("সব অপশনের লেখা ডিফল্ট অবস্থায় ফিরিয়ে আনবে?")){content=defaults.map(x=>({...x}));renderFields();renderCards();try{localStorage.removeItem(STORAGE_KEY)}catch(e){}setStatus("ডিফল্ট লেখা ফিরিয়ে আনা হয়েছে।");}
 });
-
-// ---------- Initial render ----------
-updateDisplay();
+document.getElementById("exportBtn").addEventListener("click",()=>{
+ const blob=new Blob([JSON.stringify(content,null,2)],{type:"application/json;charset=utf-8"});
+ const url=URL.createObjectURL(blob);const a=document.createElement("a");a.href=url;a.download="amar_bangla_lekha_backup.json";a.click();URL.revokeObjectURL(url);
+});
+renderCards();
 </script>
 </body>
 </html>
